@@ -25,12 +25,17 @@
             "metadata": {
                 "description": "Add the authZ array provided by the MSP"
             }
+        },
+        "managementGroup":{
+            "type":"string",
+            "metadata":{
+                "description":"Root management group for Tenant"
+            }
         }
     },
     "variables": {
         "policyDefinitionName": "Enable-Azure-Lighthouse",
-        "rbacOwner": "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
-        "targetMG":"9342bb13-ba90-48aa-b2f8-084d0a105c33"
+        "rbacOwner": "8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
 		},
     "resources": [
         {
@@ -70,6 +75,13 @@
                         "metadata": {
                             "description": "Add the authZ array provided by the MSP"
                         }
+                    },
+                    "managemGroup":{
+                        "type":"string",
+                        "defaultValue":"[parameters('managementGroup')]",
+                        "metadata":{
+                            "description":"Root management group for Tenant"
+                        }
                     }
                 },
                 "policyRule": {
@@ -108,16 +120,19 @@
                                     "mode": "incremental",
                                     "parameters": {
                                         "managedByTenantId": {
-                                            "value": "[[parameters('managedByTenantId')]"
+                                            "value": "[parameters('managedByTenantId')]"
                                         },
                                         "managedByName": {
-                                            "value": "[[parameters('managedByName')]"
+                                            "value": "[parameters('managedByName')]"
                                         },
                                         "managedByDescription": {
-                                            "value": "[[parameters('managedByDescription')]"
+                                            "value": "[parameters('managedByDescription')]"
                                         },
                                         "managedByAuthorizations": {
-                                            "value": "[[parameters('managedByAuthorizations')]"
+                                            "value": "[parameters('managedByAuthorizations')]"
+                                        },
+                                        "managementGroup":{
+                                            "value":"[parameters('managementGroup')]"
                                         }
                                     },
                                     "template": {
@@ -135,32 +150,35 @@
                                             },
                                             "managedByAuthorizations": {
                                                 "type": "array"
+                                            },
+                                            "managementGroup":{
+                                                "type":"string"
                                             }
                                         },
                                         "variables": {
-                                            "managedByRegistrationName": "[[guid(parameters('managedByName'))]",
-                                            "managedByAssignmentName": "[[guid(parameters('managedByName'))]"
+                                            "managedByRegistrationName": "[guid(parameters('managedByName'))]",
+                                            "managedByAssignmentName": "[guid(parameters('managedByName'))]"
                                         },
                                         "resources": [
                                             {
                                                 "type": "Microsoft.ManagedServices/registrationDefinitions",
                                                 "apiVersion": "2019-06-01",
-                                                "name": "[[variables('managedByRegistrationName')]",
+                                                "name": "[variables('managedByRegistrationName')]",
                                                 "properties": {
-                                                    "registrationDefinitionName": "[[parameters('managedByName')]",
-                                                    "description": "[[parameters('managedByDescription')]",
-                                                    "managedByTenantId": "[[parameters('managedByTenantId')]",
-                                                    "authorizations": "[[parameters('managedByAuthorizations')]"
+                                                    "registrationDefinitionName": "[parameters('managedByName')]",
+                                                    "description": "[parameters('managedByDescription')]",
+                                                    "managedByTenantId": "[parameters('managedByTenantId')]",
+                                                    "authorizations": "[parameters('managedByAuthorizations')]"
                                                 }
                                             },
                                             {
                                                 "type": "Microsoft.ManagedServices/registrationAssignments",
                                                 "apiVersion": "2019-06-01",
-                                                "name": "[[variables('managedByAssignmentName')]",
+                                                "name": "[variables('managedByAssignmentName')]",
                                                 "dependsOn": [
-                                                    "[[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('managedByRegistrationName'))]"], 
+                                                    "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('managedByRegistrationName'))]"], 
                                                 "properties": {
-                                                    "registrationDefinitionId": "[[resourceId('Microsoft.ManagedServices/registrationDefinitions/',variables('managedByRegistrationName'))]"
+                                                    "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/',variables('managedByRegistrationName'))]"
                                             }
                                             },
                                             {
@@ -168,8 +186,8 @@
                                                 "name": "[variables('policyDefinitionName')]",
                                                 "apiVersion": "2019-09-01",
                                                 "properties": {
-                                                  "scope": "[tenantResourceId('Microsoft.Management/managementGroups', variables('targetMG'))]",
-                                                  "policyDefinitionId": "[extensionResourceId(variables('targetMG'), 'Microsoft.Authorization/policyDefinitions', variables('policyDefinitionName'))]"
+                                                  "scope": "[tenantResourceId('Microsoft.Management/managementGroups', parameters('managementGroup'))]",
+                                                  "policyDefinitionId": "[extensionResourceId(variables('managementGroup'), 'Microsoft.Authorization/policyDefinitions', variables('policyDefinitionName'))]"
                                                 }   
                                             }
                                         ]
