@@ -76,7 +76,7 @@
                             "description": "Add the authZ array provided by the MSP"
                         }
                     },
-                    "managemGroup":{
+                    "managementGroup":{
                         "type":"string",
                         "defaultValue":"[parameters('managementGroup')]",
                         "metadata":{
@@ -133,6 +133,12 @@
                                         },
                                         "managementGroup":{
                                             "value":"[parameters('managementGroup')]"
+                                        },
+                                        "managedByRegistrationName":{
+                                            "value":"[parameters('managedByName')]"
+                                        },
+                                        "managedByAssignmentName":{
+                                            "value":"[parameters('managedByName')]"
                                         }
                                     },
                                     "template": {
@@ -163,7 +169,7 @@
                                             {
                                                 "type": "Microsoft.ManagedServices/registrationDefinitions",
                                                 "apiVersion": "2019-06-01",
-                                                "name": "[variables('managedByRegistrationName')]",
+                                                "name": "[parameters('managedByRegistrationName')]",
                                                 "properties": {
                                                     "registrationDefinitionName": "[parameters('managedByName')]",
                                                     "description": "[parameters('managedByDescription')]",
@@ -174,11 +180,11 @@
                                             {
                                                 "type": "Microsoft.ManagedServices/registrationAssignments",
                                                 "apiVersion": "2019-06-01",
-                                                "name": "[variables('managedByAssignmentName')]",
+                                                "name": "[parameters('managedByAssignmentName')]",
                                                 "dependsOn": [
-                                                    "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('managedByRegistrationName'))]"], 
+                                                    "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', parameters('managedByRegistrationName'))]"], 
                                                 "properties": {
-                                                    "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/',variables('managedByRegistrationName'))]"
+                                                    "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/',parameters('managedByRegistrationName'))]"
                                             }
                                             },
                                             {
