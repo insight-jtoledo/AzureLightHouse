@@ -1,6 +1,7 @@
 param(
 $TenantID,
 $ManagementGroupName,
+$Location,
 $PolicyDefinitionName="Enable-Azure-Lighthouse"
 )
 
@@ -13,7 +14,7 @@ $ManagementGroup = Get-AzManagementGroup | Where-Object{$_.DisplayName -eq $Mana
 # Deploy Policy
 Write-Host ""
 Write-Host "Deploying Azure Lighthouse Policy.."
-New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location AustraliaEast `
+New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location $Location `
 -ManagementGroupId $ManagementGroup.Name `
 -TemplateFile '.\downloads\deployLighthouseIfNotExistManagementGroup.json' `
 -TemplateParameterFile '.\downloads\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
