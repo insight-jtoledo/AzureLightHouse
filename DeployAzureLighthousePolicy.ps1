@@ -32,8 +32,4 @@ $ObjectID = [GUID]($PolicyAssignment.Identity.principalId)
 Start-Sleep 90
 New-AzRoleAssignment -Scope $managementGroup.Id -ObjectId $ObjectID -RoleDefinitionId $RoleDefinitionId
 
-$Remediate = Read-Host "Remediate Non Compliant Resources? (Y/N)"
-
-if($Remediate='Y'){
-    .\RemediateAzureLighthouse.ps1 -TenantID $TenantID -ManagementGroupName $ManagementGroupName -Location $Location -PolicyDefinitionName $PolicyDefinitionName.Name
-    }else{Write-Host "Deployment Done" -ForegroundColor Cyan}
+Write-Host "Policy for Azure Lighthouse has been completed" -ForegroundColor Cyan
