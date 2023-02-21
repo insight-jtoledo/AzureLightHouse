@@ -25,12 +25,6 @@
             "metadata": {
                 "description": "Add the authZ array provided by the MSP"
             }
-        },
-        "managementGroup":{
-            "type":"string",
-            "metadata":{
-                "description":"Root management group for Tenant"
-            }
         }
     },
     "variables": {
@@ -44,7 +38,7 @@
             "name": "[variables('policyDefinitionName')]",
             "properties": {
                 "description": "Policy to enforce Lighthouse on subscriptions, delegating mgmt to MSP",
-                "displayName": "Enforce Lighthouse on subscriptions",
+                "displayName": "Enable-Azure-Lighthouse",
                 "mode": "All",
                 "policyType": "Custom",
                 "parameters": {
@@ -74,13 +68,6 @@
                         "defaultValue" : "[parameters('managedByAuthorizations')]",
                         "metadata": {
                             "description": "Add the authZ array provided by the MSP"
-                        }
-                    },
-                    "managementGroup":{
-                        "type":"string",
-                        "defaultValue":"[parameters('managementGroup')]",
-                        "metadata":{
-                            "description":"Root management group for Tenant"
                         }
                     }
                 },
@@ -120,25 +107,16 @@
                                     "mode": "incremental",
                                     "parameters": {
                                         "managedByTenantId": {
-                                            "value": "[parameters('managedByTenantId')]"
+                                            "value": "[[parameters('managedByTenantId')]"
                                         },
                                         "managedByName": {
-                                            "value": "[parameters('managedByName')]"
+                                            "value": "[[parameters('managedByName')]"
                                         },
                                         "managedByDescription": {
-                                            "value": "[parameters('managedByDescription')]"
+                                            "value": "[[parameters('managedByDescription')]"
                                         },
                                         "managedByAuthorizations": {
-                                            "value": "[parameters('managedByAuthorizations')]"
-                                        },
-                                        "managementGroup":{
-                                            "value":"[parameters('managementGroup')]"
-                                        },
-                                        "managedByRegistrationName":{
-                                            "value":"[parameters('managedByName')]"
-                                        },
-                                        "managedByAssignmentName":{
-                                            "value":"[parameters('managedByName')]"
+                                            "value": "[[parameters('managedByAuthorizations')]"
                                         }
                                     },
                                     "template": {
@@ -156,45 +134,33 @@
                                             },
                                             "managedByAuthorizations": {
                                                 "type": "array"
-                                            },
-                                            "managementGroup":{
-                                                "type":"string"
                                             }
                                         },
                                         "variables": {
-                                            "managedByRegistrationName": "[guid(parameters('managedByName'))]",
-                                            "managedByAssignmentName": "[guid(parameters('managedByName'))]"
+                                            "managedByRegistrationName": "[[guid(parameters('managedByName'))]",
+                                            "managedByAssignmentName": "[[guid(parameters('managedByName'))]"
                                         },
                                         "resources": [
                                             {
                                                 "type": "Microsoft.ManagedServices/registrationDefinitions",
                                                 "apiVersion": "2019-06-01",
-                                                "name": "[parameters('managedByRegistrationName')]",
+                                                "name": "[[variables('managedByRegistrationName')]",
                                                 "properties": {
-                                                    "registrationDefinitionName": "[parameters('managedByName')]",
-                                                    "description": "[parameters('managedByDescription')]",
-                                                    "managedByTenantId": "[parameters('managedByTenantId')]",
-                                                    "authorizations": "[parameters('managedByAuthorizations')]"
+                                                    "registrationDefinitionName": "[[parameters('managedByName')]",
+                                                    "description": "[[parameters('managedByDescription')]",
+                                                    "managedByTenantId": "[[parameters('managedByTenantId')]",
+                                                    "authorizations": "[[parameters('managedByAuthorizations')]"
                                                 }
                                             },
                                             {
                                                 "type": "Microsoft.ManagedServices/registrationAssignments",
                                                 "apiVersion": "2019-06-01",
-                                                "name": "[parameters('managedByAssignmentName')]",
+                                                "name": "[[variables('managedByAssignmentName')]",
                                                 "dependsOn": [
-                                                    "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', parameters('managedByRegistrationName'))]"], 
+                                                    "[[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('managedByRegistrationName'))]"], 
                                                 "properties": {
-                                                    "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/',parameters('managedByRegistrationName'))]"
+                                                    "registrationDefinitionId": "[[resourceId('Microsoft.ManagedServices/registrationDefinitions/',variables('managedByRegistrationName'))]"
                                             }
-                                            },
-                                            {
-                                                "type": "Microsoft.Authorization/policyAssignments",
-                                                "name": "[variables('policyDefinitionName')]",
-                                                "apiVersion": "2019-09-01",
-                                                "properties": {
-                                                  "scope": "[tenantResourceId('Microsoft.Management/managementGroups', parameters('managementGroup'))]",
-                                                  "policyDefinitionId": "[extensionResourceId(variables('managementGroup'), 'Microsoft.Authorization/policyDefinitions', variables('policyDefinitionName'))]"
-                                                }   
                                             }
                                         ]
                                     }
