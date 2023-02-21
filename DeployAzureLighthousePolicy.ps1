@@ -1,13 +1,12 @@
 param(
-$TenantID,
-$ManagementGroupName,
-$Location,
-$ResourceGroupName,
 $PolicyDefinitionName="Enable-Azure-Lighthouse"
 )
 
-# Login to Azure
-Login-AzAccount -Tenant $TenantID
+# Get Details
+$ManagementGroupName = Read-Host "Enter Management Group Name"
+$Location = Read-Host "Enter Location"
+$ResourceGroupName = Read-Host "Enter Azure Guardian Resource Group Name"
+Write-Host ""
 
 # Get Management Group Details
 $ManagementGroup = Get-AzManagementGroup | Where-Object{$_.DisplayName -eq $ManagementGroupName}
