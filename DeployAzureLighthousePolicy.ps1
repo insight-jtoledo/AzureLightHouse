@@ -2,6 +2,7 @@ param(
 $TenantID,
 $ManagementGroupName,
 $Location,
+$ResourceGroupName,
 $PolicyDefinitionName="Enable-Azure-Lighthouse"
 )
 
@@ -20,16 +21,21 @@ New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location $Location 
 -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
 
 # Get the policy assignment from the management group
-$PolicyDefinitionName = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
+$PolicyDefinition = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
 
 # Create a new policy assignment with the policy definition
 Write-Host ""
 Write-Host "Assigning policy to the specified Management Group.."
-New-AzPolicyAssignment -Name $PolicyDefinitionName.ResourceName -Scope $ManagementGroup.Id -PolicyDefinition $PolicyDefinitionName -IdentityType SystemAssigned -Location australiaeast
-$PolicyAssignment = Get-AzPolicyAssignment -PolicyDefinitionId $PolicyDefinitionName.PolicyDefinitionId
-$RoleDefinitionId = [GUID]($PolicyDefinitionName.properties.policyRule.then.details.roleDefinitionIds -split "/")[4]
+New-AzPolicyAssignment -Name $PolicyDefinition.ResourceName -Scope $ManagementGroup.Id -PolicyDefinition $PolicyDefinition -IdentityType SystemAssigned -Location australiaeast
+$PolicyAssignment = Get-AzPolicyAssignment -PolicyDefinitionId $PolicyDefinition.PolicyDefinitionId
+$RoleDefinitionId = [GUID]($PolicyDefinition.properties.policyRule.then.details.roleDefinitionIds -split "/")[4]
 $ObjectID = [GUID]($PolicyAssignment.Identity.principalId)
 Start-Sleep 90
 New-AzRoleAssignment -Scope $managementGroup.Id -ObjectId $ObjectID -RoleDefinitionId $RoleDefinitionId
 
 Write-Host "Policy for Azure Lighthouse has been completed" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Deploying Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
+# Deploying Azure Lighthouse delegation for Azure Guardian Resource Group
+New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name ("$ResourceGroupName" + "-$PolicyDefinitionName") `
+-TemplateFile .\resourcegroup.template.json -rgName $ResourceGroupName -Verbose
