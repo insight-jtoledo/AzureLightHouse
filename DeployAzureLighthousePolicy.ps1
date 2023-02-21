@@ -14,7 +14,7 @@ $ManagementGroup = Get-AzManagementGroup | Where-Object{$_.DisplayName -eq $Mana
 # Deploy Policy
 Write-Host ""
 Write-Host "Deploying Azure Lighthouse Policy.." -ForegroundColor Cyan
-New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location $Location `
+#New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location $Location `
 -ManagementGroupId $ManagementGroup.Name `
 -TemplateFile '.\deployLighthouseIfNotExistManagementGroup.json' `
 -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
@@ -25,12 +25,12 @@ $PolicyDefinition = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyD
 # Create a new policy assignment with the policy definition
 Write-Host ""
 Write-Host "Assigning policy to the specified Management Group.." -ForegroundColor Cyan
-New-AzPolicyAssignment -Name $PolicyDefinition.ResourceName -Scope $ManagementGroup.Id -PolicyDefinition $PolicyDefinition -IdentityType SystemAssigned -Location australiaeast
+#New-AzPolicyAssignment -Name $PolicyDefinition.ResourceName -Scope $ManagementGroup.Id -PolicyDefinition $PolicyDefinition -IdentityType SystemAssigned -Location australiaeast
 $PolicyAssignment = Get-AzPolicyAssignment -PolicyDefinitionId $PolicyDefinition.PolicyDefinitionId
 $RoleDefinitionId = [GUID]($PolicyDefinition.properties.policyRule.then.details.roleDefinitionIds -split "/")[4]
 $ObjectID = [GUID]($PolicyAssignment.Identity.principalId)
 Start-Sleep 90
-New-AzRoleAssignment -Scope $managementGroup.Id -ObjectId $ObjectID -RoleDefinitionId $RoleDefinitionId
+#New-AzRoleAssignment -Scope $managementGroup.Id -ObjectId $ObjectID -RoleDefinitionId $RoleDefinitionId
 
 Write-Host "Policy for Azure Lighthouse has been completed" -ForegroundColor Cyan
 Write-Host ""
@@ -100,4 +100,4 @@ if ($ctx.Subscription.Id -ne $subscriptionId) {
 }
 
 # Deploying Azure Lighthouse delegation for Azure Guardian Resource Group
-New-AzSubscriptionDeployment -Name "RGDeployment" -Location $Location -TemplateFile .\Downloads\resourcegroup.template.json -rgName $ResourceGroupName -WhatIf
+New-AzSubscriptionDeployment -Name "RGDeployment" -Location $Location -TemplateFile .\resourcegroup.template.json -rgName $ResourceGroupName -WhatIf
