@@ -14,11 +14,11 @@ $ManagementGroup = Get-AzManagementGroup | Where-Object{$_.DisplayName -eq $Mana
 # Deploy Policy
 Write-Host ""
 Write-Host "Deploying Azure Lighthouse Policy.." -ForegroundColor Cyan
-#New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location $Location `
+<#New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location $Location `
 -ManagementGroupId $ManagementGroup.Name `
 -TemplateFile '.\deployLighthouseIfNotExistManagementGroup.json' `
 -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
-
+#>
 # Get the policy assignment from the management group
 $PolicyDefinition = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
 
@@ -100,4 +100,4 @@ if ($ctx.Subscription.Id -ne $subscriptionId) {
 }
 
 # Deploying Azure Lighthouse delegation for Azure Guardian Resource Group
-New-AzSubscriptionDeployment -Name "RGDeployment" -Location $Location -TemplateFile .\resourcegroup.template.json -rgName $ResourceGroupName -WhatIf
+New-AzSubscriptionDeployment -Name "RGDeployment" -Location $Location -TemplateFile .\resourcegroup.template.json -rgName $ResourceGroupName
