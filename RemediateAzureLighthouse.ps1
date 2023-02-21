@@ -1,6 +1,6 @@
 param(
 $PolicyDefinitionName="Enable-Azure-Lighthouse",
-$managementGroup = 'Tenant Root Group'
+$managementGroupName = 'Tenant Root Group'
 )
 
 # Get Management Group Details
