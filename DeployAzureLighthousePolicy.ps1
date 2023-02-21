@@ -36,5 +36,5 @@ Write-Host "Policy for Azure Lighthouse has been completed" -ForegroundColor Cya
 Write-Host ""
 Write-Host "Deploying Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
 # Deploying Azure Lighthouse delegation for Azure Guardian Resource Group
-New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
--TemplateFile .\resourcegroup.template.json -rgName $ResourceGroupName -Verbose
+New-AzSubscriptionDeployment -Name "RGDeployment" -Location $Location -TemplateFile .\resourcegroup.template.json `
+-rgName $ResourceGroupName
