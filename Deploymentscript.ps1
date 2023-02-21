@@ -47,6 +47,5 @@ $nonCompliantPolicies | ForEach-Object{
     $name = ("rem." + $_.PolicyDefinitionName)
     Start-AzPolicyRemediation -Name $name `
     -PolicyAssignmentId $_.PolicyAssignmentId `
-    -PolicyDefinitionReferenceId $_.PolicyDefinitionId `
     -Scope $managementGroup.Id
     }
