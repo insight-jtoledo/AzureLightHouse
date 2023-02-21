@@ -1,6 +1,10 @@
 param(
-$PolicyDefinitionName="Enable-Azure-Lighthouse"
+$PolicyDefinitionName="Enable-Azure-Lighthouse",
+$managementGroup = 'Tenant Root Group'
 )
+
+# Get Management Group Details
+$ManagementGroup = Get-AzManagementGroup | Where-Object{$_.DisplayName -eq $ManagementGroupName}
 
 # Start Remediation Task
 Write-Host ""
@@ -16,6 +20,6 @@ $nonCompliantPolicies | ForEach-Object{
     $name = ("rem." + $_.PolicyDefinitionName)
     Start-AzPolicyRemediation -Name $name `
     -PolicyAssignmentId $_.PolicyAssignmentId `
-    -Scope $managementGroup.Id
+    -Scope $ManagementGroup.Id
     Write-Host "Remediation started for $SubscriptionID" -ForegroundColor Cyan
     }
