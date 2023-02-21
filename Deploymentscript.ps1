@@ -16,8 +16,8 @@ Write-Host ""
 Write-Host "Deploying Azure Lighthouse Policy.."
 New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location $Location `
 -ManagementGroupId $ManagementGroup.Name `
--TemplateFile '.\downloads\deployLighthouseIfNotExistManagementGroup.json' `
--TemplateParameterFile '.\downloads\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
+-TemplateFile '.\deployLighthouseIfNotExistManagementGroup.json' `
+-TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
 
 # Get the policy assignment from the management group
 $PolicyDefinitionName = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
