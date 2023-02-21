@@ -1,7 +1,4 @@
 param(
-$TenantID,
-$ManagementGroupName,
-$Location,
 $PolicyDefinitionName="Enable-Azure-Lighthouse"
 )
 
@@ -11,7 +8,7 @@ Write-Host "Getting all non-compliant resources.."
 $NonCompliantPolicies = Get-AzPolicyState `
 | Where-Object{$_.ComplianceState -eq 'NonCompliant' `
 -and $_.PolicyDefinitionAction -eq 'deployifnotexists' `
--and $_.PolicyAssignmentName -eq $PolicyDefinitionName.Name}
+-and $_.PolicyAssignmentName -eq $PolicyDefinitionName}
 
 Write-Host ""
 Write-Host "Remediating existing resources that are not compliant.."
@@ -20,4 +17,5 @@ $nonCompliantPolicies | ForEach-Object{
     Start-AzPolicyRemediation -Name $name `
     -PolicyAssignmentId $_.PolicyAssignmentId `
     -Scope $managementGroup.Id
+    Write-Host "Remediation started for $SubscriptionID" -ForegroundColor Cyan
     }
