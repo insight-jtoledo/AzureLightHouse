@@ -8,7 +8,7 @@
                 "description": "Add the tenant id provided by the MSP"
             }
         },
-	"policyDefinitionName":{
+	"PolicyDefinitionName":{
 	"type":"string"
 	}
         "managedByName": {
