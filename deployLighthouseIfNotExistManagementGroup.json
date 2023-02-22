@@ -8,6 +8,9 @@
                 "description": "Add the tenant id provided by the MSP"
             }
         },
+	"policyDefinitionName":{
+	"type":"string"
+	}
         "managedByName": {
             "type": "string",
             "metadata": {
@@ -28,17 +31,16 @@
         }
     },
     "variables": {
-        "policyDefinitionName": "Enable-Azure-Lighthouse",
         "rbacOwner": "8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
 		},
     "resources": [
         {
             "type": "Microsoft.Authorization/policyDefinitions",
             "apiVersion": "2018-05-01",
-            "name": "[variables('policyDefinitionName')]",
+            "name": "[parameters('policyDefinitionName')]",
             "properties": {
                 "description": "Policy to enforce Lighthouse on subscriptions, delegating mgmt to MSP",
-                "displayName": "Enable-Azure-Lighthouse",
+                "displayName": "[parameters('policyDefinitionName')]",
                 "mode": "All",
                 "policyType": "Custom",
                 "parameters": {
