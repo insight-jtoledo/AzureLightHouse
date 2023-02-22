@@ -54,7 +54,7 @@ New-AzRoleAssignment -Scope $managementGroup.Id -ObjectId $ObjectID -RoleDefinit
 
 $Remediate = Read-Host "Remediate Non Compliant Resources? (Y/N)"
 
-if($Remediate='Y'){
+if($Remediate -eq 'Y'){
     
 # Start Remediation Task
 Write-Host ""
