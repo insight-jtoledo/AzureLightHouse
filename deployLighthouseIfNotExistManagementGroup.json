@@ -10,7 +10,7 @@
         },
 	"PolicyDefinitionName":{
 	"type":"string"
-	}
+	},
         "managedByName": {
             "type": "string",
             "metadata": {
