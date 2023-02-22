@@ -14,14 +14,15 @@ if($ManagementGroup -eq $null){
 #Check if Policy Definition Name exists
 $PolicyDefinition = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
 if($PolicyDefinition -eq $null){
-    Write-Host "Policy Definition - $PolicyDefinitionName already exist. Please specify a new one.-" -ForegroundColor Yellow
+        #Deploy Policy
+        Write-Host "Deploying Azure Lighthouse Policy.." -ForegroundColor Cyan
+        New-AzManagementGroupDeployment -Location $Location `
+        -ManagementGroupId $ManagementGroup.Name `
+        -TemplateFile '.\deployLighthouseIfNotExistManagementGroup.json' `
+        -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
+
     }else{
-    #Deploy Policy
-    Write-Host "Deploying Azure Lighthouse Policy.." -ForegroundColor Cyan
-    New-AzManagementGroupDeployment -Location $Location `
-    -ManagementGroupId $ManagementGroup.Name `
-    -TemplateFile '.\deployLighthouseIfNotExistManagementGroup.json' `
-    -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
+        Write-Host "Policy Definition - $PolicyDefinitionName already exist. Please specify a new one.-" -ForegroundColor Yellow
     }
 
 # Get the policy assignment from the management group
