@@ -50,12 +50,11 @@ $ObjectID = [GUID]($PolicyAssignment.Identity.principalId)
 Start-Sleep 90
 
 New-AzRoleAssignment -Scope $managementGroup.Id -ObjectId $ObjectID -RoleDefinitionId $RoleDefinitionId
-
+<#
 $Remediate = Read-Host "Remediate Non Compliant Resources? (Y/N)"
 
 if($Remediate -eq 'Y'){
-    
-# Start Remediation Task
+
 Write-Host ""
 Write-Host "Getting all non-compliant resources.."
 $NonCompliantPolicies = Get-AzPolicyState `
@@ -73,4 +72,5 @@ $nonCompliantPolicies | ForEach-Object{
     }
 
     }else{}
+    #>
 Write-Host "Deployment Done" -ForegroundColor Cyan
