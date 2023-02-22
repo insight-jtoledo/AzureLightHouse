@@ -42,9 +42,9 @@ New-AzPolicyAssignment -Name $PolicyDefinitionName `
 -IdentityType SystemAssigned `
 -Location australiaeast
 
-$PolicyAssignment = Get-AzPolicyAssignment -PolicyDefinitionId $PolicyDefinitionName.PolicyDefinitionId
+$PolicyAssignment = Get-AzPolicyAssignment -PolicyDefinitionId $PolicyDefinition.PolicyDefinitionId
 
-$RoleDefinitionId = [GUID]($PolicyDefinitionName.properties.policyRule.then.details.roleDefinitionIds -split "/")[4]
+$RoleDefinitionId = [GUID]($PolicyDefinition.properties.policyRule.then.details.roleDefinitionIds -split "/")[4]
 
 $ObjectID = [GUID]($PolicyAssignment.Identity.principalId)
 
@@ -62,7 +62,7 @@ Write-Host "Getting all non-compliant resources.."
 $NonCompliantPolicies = Get-AzPolicyState `
 | Where-Object{$_.ComplianceState -eq 'NonCompliant' `
 -and $_.PolicyDefinitionAction -eq 'deployifnotexists' `
--and $_.PolicyAssignmentName -eq $PolicyDefinitionName.Name}
+-and $_.PolicyAssignmentName -eq $PolicyDefinition.Name}
 
 Write-Host ""
 Write-Host "Remediating existing resources that are not compliant.."
