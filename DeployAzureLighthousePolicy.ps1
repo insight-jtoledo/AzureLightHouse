@@ -12,8 +12,9 @@ if($ManagementGroup -eq $null){
     }else{Write-Host "Verified Management Group Name - $ManagementGroupName" -ForegroundColor Cyan}
 
 #Check if Policy Definition Name exists
-$PolicyDefinitionName = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
-if($PolicyDefinitionName -eq $null){
+$PolicyDefinition = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
+if($PolicyDefinition -eq $null){
+    Write-Host "Policy Definition - $PolicyDefinitionName already exist. Please specify a new one.-" -ForegroundColor Yellow
     }else{
     #Deploy Policy
     Write-Host "Deploying Azure Lighthouse Policy.." -ForegroundColor Cyan
@@ -21,11 +22,16 @@ if($PolicyDefinitionName -eq $null){
     -ManagementGroupId $ManagementGroup.Name `
     -TemplateFile '.\deployLighthouseIfNotExistManagementGroup.json' `
     -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
-    Write-Host "Policy Definition - $PolicyDefinitionName already exist. Please specify a new one.-" -ForegroundColor Yellow
     }
 
 # Get the policy assignment from the management group
-$PolicyDefinitionName = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
+do{
+    Write-Host "Waiting for Policy Definition to be created.."
+    Start-Sleep 10
+    $PolicyDefinition = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
+    }until(
+        (Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}) -ne $null
+            )
 
 # Create a new policy assignment with the policy definition
 Write-Host "Assigning policy to the specified Management Group.." -ForegroundColor Cyan
