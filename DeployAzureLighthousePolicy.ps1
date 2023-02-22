@@ -36,9 +36,9 @@ do{
 
 # Create a new policy assignment with the policy definition
 Write-Host "Assigning policy to the specified Management Group.." -ForegroundColor Cyan
-New-AzPolicyAssignment -Name $PolicyDefinitionName.ResourceName `
+New-AzPolicyAssignment -Name $PolicyDefinitionName `
 -Scope $ManagementGroup.Id `
--PolicyDefinition $PolicyDefinitionName `
+-PolicyDefinition $PolicyDefinition `
 -IdentityType SystemAssigned `
 -Location australiaeast
 
