@@ -10,8 +10,8 @@ if($ManagementGroup -eq $null){
     }else{Write-Host "Verified Management Group Name - $ManagementGroupName" -ForegroundColor Cyan}
 
 #Check if Policy Definition Name exists
-$PolicyDefinitionName = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
-if($PolicyDefinitionName -eq $null){
+$PolicyDefinition = Get-AzPolicyDefinition | where-object{$_.Name -like $PolicyDefinitionName}
+if($PolicyDefinition -eq $null){
     Write-Host "Please check $PolicyDefinitionName exists" -ForegroundColor Yellow
     }else{
         # Start Remediation Task
