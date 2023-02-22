@@ -18,7 +18,8 @@ if($PolicyDefinition -eq $null){
         New-AzManagementGroupDeployment -Location $Location `
         -ManagementGroupId $ManagementGroup.Name `
         -TemplateFile '.\deployLighthouseIfNotExistManagementGroup.json' `
-        -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
+        -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' `
+        -PolicyDefinitionName $PolicyDefinitionName -verbose
 
     }else{
         Write-Host "Policy Definition - $PolicyDefinitionName already exist. Please specify a new one.-" -ForegroundColor Yellow
