@@ -4,7 +4,7 @@
     "parameters": {
 	"PolicyDefinitionName":{
 	"type":"string"
-	}
+	},
         "managedByName": {
             "value": "Insight-MS-APAC-Azure-Guardian"
         },
