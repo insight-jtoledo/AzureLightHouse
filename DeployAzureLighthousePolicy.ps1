@@ -1,7 +1,8 @@
 param(
 [parameter(Mandatory)][string]$ManagementGroupName,
 [parameter(Mandatory)][string]$Location,
-[parameter(Mandatory)][string]$PolicyDefinitionName
+[parameter(Mandatory)][string]$PolicyDefinitionName,
+[parameter(Mandatory)][string]$ResourceGroupName
 )
 
 #Get Management Group Details
