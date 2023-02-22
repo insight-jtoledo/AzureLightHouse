@@ -17,7 +17,7 @@ if($PolicyDefinitionName -eq $null){
     }else{
     #Deploy Policy
     Write-Host "Deploying Azure Lighthouse Policy.." -ForegroundColor Cyan
-    New-AzManagementGroupDeployment -Name $PolicyDefinitionName -Location $Location `
+    New-AzManagementGroupDeployment -Location $Location `
     -ManagementGroupId $ManagementGroup.Name `
     -TemplateFile '.\deployLighthouseIfNotExistManagementGroup.json' `
     -TemplateParameterFile '.\deployLighthouseIfNotExistsManagementGroup.parameters.json' -verbose
