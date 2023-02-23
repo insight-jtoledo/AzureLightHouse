@@ -1,5 +1,6 @@
 ﻿Param(
-[parameter(Mandatory)][string]$ResourceGroupName
+[parameter(Mandatory)][string]$ResourceGroupName,
+[parameter(Mandatory)][string]$Location
 )
 Write-Host "Deploying Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
 
