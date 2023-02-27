@@ -4,57 +4,52 @@ param (
     [parameter(mandatory)][string]$ResourceGroupName
 )
 
+$ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName
+if ($ResourceGroup -eq $null) {
+    Write-Host "$ResourceGroupName does not exist" -ForegroundColor Yellow
+    do {
+        $ResourceGroupName = Read-Host "Enter name of Resource Group"
+    }until((Get-AzResourceGroup -ResourceGroupName $ResourceGroupName) -ne $null)
+}
+else { Write-Host "Validated Resource Group Name -ForegroundColor Cyan" }
+
+# Deploying Azure Lighthouse delegate
+Write-Host "Deploying Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
+New-AzSubscriptionDeployment -Name "RGDeployment" -Location $Location -TemplateFile .\resourcegroup.template.json -rgName $ResourceGroupName
+Write-Host "Deployed Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
+
 $ManagementGroup = Get-AzManagementGroup | Where-Object { $_.displayName -eq $ManagementGroupName }
+if ($ManagementGroup -eq $null) {
+    Write-Host "$ManagementGroupName does not exist" -ForegroundColor Yellow
+    do {
+        $ManagementGroupName = Read-Host "Enter name of Management Group"  
+    }until((Get-AzManagementGroup | Where-Object { $_.displayName -eq $ManagementGroupName }) -ne $null)
+}
+else { Write-Host "Validated Management Group Name" -ForegroundColor Cyan }
 
 $subscriptions = Search-AzGraph -Query "ResourceContainers | where type =~ 'microsoft.resources/subscriptions'" -ManagementGroup $managementGroup.Name
 
+$enrollmentstatus = @()
 ForEach ($subscription in $subscriptions) {
-    Write-Host "Deploying Azure Lighthouse to"$subscription.Name -ForegroundColor Cyan
-    Set-AzContext -Subscription $subscription.subscriptionId
-    New-AzSubscriptionDeployment -Location $Location -TemplateFile .\subscription.template.json
+    try {
+        Write-Host "Deploying Azure Lighthouse to"$subscription.Name -ForegroundColor Cyan
+        Set-AzContext -Subscription $subscription.subscriptionId
+        New-AzSubscriptionDeployment -Location $Location -TemplateFile .\subscription.template.json
+        $data = "" | Select-Object SubscriptionName, SubscriptionID, Status
+        $data.SubscriptionName = $subscription.Name
+        $data.SubscriptionID = $subscription.subscriptionId
+        $data.Status = 'Enrolled'
+        $enrollmentstatus += $data
+    }
+    catch {
+        $data = "" | Select-Object SubscriptionName, SubscriptionID, Status
+        $data.SubscriptionName = $subscription.Name
+        $data.SubscriptionID = $subscription.subscriptionId
+        $data.Status = 'NotEnrolled'
+        $enrollmentstatus += $data
+    }
 }
 
 Write-Host "Deployed Azure Lighthouse to subscription/s under" $managementGroup.DisplayName -ForegroundColor Cyan
-
-Write-Host "Deploying Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
-
-# Subscription List
-$subList = @()
-$subscriptions = Get-AzSubscription | Where-Object { $_.State -eq "Enabled" } |  ForEach-Object{
-    if(($_.SubscriptionPolicies.QuotaId -notlike "Internal*") -and ($_.SubscriptionPolicies.QuotaId -notlike "AAD*")){
-        [pscustomobject]@{
-            Name=$_.Name
-            Id=$_.Id
-        }
-    }
-    $subList += $_ | Select-Object Name, Id
-}
-
-# Select Subscription
-if ($subList.Count -gt 1) {
-
-    $selectedIndex=0
-    for ($i=0; $i -lt $subList.Count; $i++) {
-        Write-Output "[$i] $($subList[$i].Name)"    
-    }
-
-    $lastSubscriptionIndex = $subscriptions.Count - 1
-    while ($selectedIndex -lt 0 -or $selectedIndex -gt $lastSubscriptionIndex+1) {
-        Write-Output "---"
-        $selectedIndex = [int] (Read-Host "Please, select the target subscription for this deployment [0..$lastSubscriptionIndex]")
-    }  
-
-    Write-Host "Getting Azure subscriptions (filtering out unsupported ones)..." -ForegroundColor Green
-    $subscriptionId = $subList[$selectedIndex].Id
-
-    if ($ctx.Subscription.Id -ne $subscriptionId) {
-        $ctx = Select-AzSubscription -SubscriptionId $subscriptionId
-    }
-}
-else {
-    Write-Error "No valid subscriptions found. Azure AD or Internal subscriptions are currently not supported."
-}
-
-# Deploying Azure Lighthouse delegate 
-New-AzSubscriptionDeployment -Name "RGDeployment" -Location $Location -TemplateFile .\resourcegroup.template.json -rgName $ResourceGroupName
-Write-Host "Deployed Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
+Write-Host "Enrollment Status for each subscription"
+$enrollmentstatus
