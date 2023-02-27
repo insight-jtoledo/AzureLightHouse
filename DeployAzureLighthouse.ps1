@@ -4,7 +4,7 @@ param (
     [parameter(mandatory)][string]$ResourceGroupName
 )
 
-$ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName
+$ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
 if ($ResourceGroup -eq $null) {
     Write-Host "$ResourceGroupName does not exist" -ForegroundColor Yellow
     do {
