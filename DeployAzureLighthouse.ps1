@@ -4,6 +4,13 @@ param (
     [parameter(mandatory)][string]$ResourceGroupName
 )
 
+#Check Modules
+$azGraph = Get-Module az.resourcegraph -ErrorAction silentlycontinue
+if($azGraph -eq $null){
+    Install-Module Az.ResourceGraph -Force -Confirm:$false
+}
+
+#Validate Resource Group Name
 $ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
 if ($ResourceGroup -eq $null) {
     Write-Host "$ResourceGroupName does not exist" -ForegroundColor Yellow
@@ -18,6 +25,7 @@ Write-Host "Deploying Azure Lighthouse to $ResourceGroupName" -ForegroundColor C
 New-AzSubscriptionDeployment -Name "RGDeployment" -Location $Location -TemplateFile .\resourcegroup.template.json -rgName $ResourceGroupName
 Write-Host "Deployed Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
 
+# Validate Management Group Name
 $ManagementGroup = Get-AzManagementGroup | Where-Object { $_.displayName -eq $ManagementGroupName }
 if ($ManagementGroup -eq $null) {
     Write-Host "$ManagementGroupName does not exist" -ForegroundColor Yellow
