@@ -35,7 +35,7 @@ if ($ManagementGroup -eq $null) {
 }
 else { Write-Host "Validated Management Group Name" -ForegroundColor Cyan }
 
-$subscriptions = Search-AzGraph -Query "ResourceContainers | where type =~ 'microsoft.resources/subscriptions'" -ManagementGroup $managementGroup.Name
+$subscriptions = Search-AzGraph -Query "ResourceContainers | where type =~ 'microsoft.resources/subscriptions'" -ManagementGroup $ManagementGroupName
 
 $enrollmentstatus = @()
 ForEach ($subscription in $subscriptions) {
