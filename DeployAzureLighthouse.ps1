@@ -1,27 +1,24 @@
-param (
-    [parameter(mandatory)][string]$ManagementGroupName,
-    [parameter(mandatory)][string]$Location,
-    [parameter(mandatory)][string]$ResourceGroupName,
-    [parameter(mandatory)][string]$Country
+[parameter(mandatory)][string]$ManagementGroupName,
+[parameter(mandatory)][string]$Location,
+[parameter(mandatory)][string]$ResourceGroupName,
+[parameter(mandatory)][string]$Country
 )
 
 #Check Modules
-$azGraph = Get-Module az.resourcegraph -ErrorAction silentlycontinue
-if ($azGraph -eq $null) {
-    Install-Module Az.ResourceGraph -Force -Confirm:$false
+if (-not (Get-Module -Name Az.ResourceGraph -ErrorAction SilentlyContinue)) {
+Install-Module Az.ResourceGraph -Force -Confirm:$false
 }
-$az = Get-Module -Name Az -ErrorAction SilentlyContinue
-if($az -eq $null){
-    Install-Module Az -Force -Confirm:$false -ErrorAction SilentlyContinue
+if (-not (Get-Module -Name Az -ErrorAction SilentlyContinue)) {
+Install-Module Az -Force -Confirm:$false -ErrorAction SilentlyContinue
 }
 
 #Validate Resource Group Name
 $ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
 if ($ResourceGroup -eq $null) {
-    Write-Host "$ResourceGroupName does not exist" -ForegroundColor Yellow
-    do {
-        $ResourceGroupName = Read-Host "Enter name of Resource Group"
-    }until((Get-AzResourceGroup -ResourceGroupName $ResourceGroupName) -ne $null)
+Write-Host "$ResourceGroupName does not exist" -ForegroundColor Yellow
+do {
+    $ResourceGroupName = Read-Host "Enter name of Resource Group"
+}until(($ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName) -ne $null)
 }
 else { Write-Host "Validated Resource Group Name -ForegroundColor Cyan" }
 
@@ -33,35 +30,34 @@ Write-Host "Deployed Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cy
 # Validate Management Group Name
 $ManagementGroup = Get-AzManagementGroup | Where-Object { $_.displayName -eq $ManagementGroupName }
 if ($ManagementGroup -eq $null) {
-    Write-Host "$ManagementGroupName does not exist" -ForegroundColor Yellow
-    do {
-        $ManagementGroupName = Read-Host "Enter name of Management Group"  
-    }until((Get-AzManagementGroup | Where-Object { $_.displayName -eq $ManagementGroupName }) -ne $null)
+Write-Host "$ManagementGroupName does not exist" -ForegroundColor Yellow
+do {
+    $ManagementGroupName = Read-Host "Enter name of Management Group"  
+}until(($ManagementGroup = Get-AzManagementGroup | Where-Object { $_.displayName -eq $ManagementGroupName }) -ne $null)
 }
 else { Write-Host "Validated Management Group Name" -ForegroundColor Cyan }
 
-$ManagementGroup = Get-AzManagementGroup | Where-Object { $_.displayName -eq $ManagementGroupName }
-$subscriptions = Search-AzGraph -Query "ResourceContainers | where type =~ 'microsoft.resources/subscriptions'" -ManagementGroup $ManagementGroup.Name
+$subscriptions = Search-AzGraph -Query "ResourceContainers | where type =~ 'microsoft.resources/subscriptions'" -ManagementGroup $managementGroup.Name
 
 $enrollmentstatus = @()
 ForEach ($subscription in $subscriptions) {
-    try {
-        Write-Host "Deploying Azure Lighthouse to"$subscription.Name -ForegroundColor Cyan
-        Set-AzContext -Subscription $subscription.subscriptionId
-        New-AzSubscriptionDeployment -Location $Location -TemplateFile .\subscription.template.json -TemplateParameterFile ('.\subscription.'+ $country +'.template.parameter.json')
-        $data = "" | Select-Object SubscriptionName, SubscriptionID, Status
-        $data.SubscriptionName = $subscription.Name
-        $data.SubscriptionID = $subscription.subscriptionId
-        $data.Status = 'Enrolled'
-        $enrollmentstatus += $data
-    }
-    catch {
-        $data = "" | Select-Object SubscriptionName, SubscriptionID, Status
-        $data.SubscriptionName = $subscription.Name
-        $data.SubscriptionID = $subscription.subscriptionId
-        $data.Status = 'NotEnrolled'
-        $enrollmentstatus += $data
-    }
+try {
+    Write-Host "Deploying Azure Lighthouse to"$subscription.Name -ForegroundColor Cyan
+    Set-AzContext -Subscription $subscription.subscriptionId
+    New-AzSubscriptionDeployment -Location $Location -TemplateFile .\subscription.template.json -TemplateParameterFile ('.\subscription.' + $country + '.template.parameters.json')
+    $data = "" | Select-Object SubscriptionName, SubscriptionID, Status
+    $data.SubscriptionName = $subscription.Name
+    $data.SubscriptionID = $subscription.subscriptionId
+    $data.Status = 'Enrolled'
+    $enrollmentstatus += $data
+}
+catch {
+    $data = "" | Select-Object SubscriptionName, SubscriptionID, Status
+    $data.SubscriptionName = $subscription.Name
+    $data.SubscriptionID = $subscription.subscriptionId
+    $data.Status = 'NotEnrolled'
+    $enrollmentstatus += $data
+}
 }
 
 Write-Host "Deployed Azure Lighthouse to subscription/s under" $managementGroup.DisplayName -ForegroundColor Cyan
