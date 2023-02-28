@@ -45,10 +45,42 @@ $subscriptions = Search-AzGraph -Query "ResourceContainers | where type =~ 'micr
 
 # Update Authorization based on country specified
 if ($Country -eq 'AU') {
-    $authorization = '{"principalId":"d58f3234-5da6-4c0e-a54d-91b943062ae9","roleDefinitionId":"b24988ac-6180-42a0-ab88-20f7382dd24c","principalIdDisplayName":"Insight-MS-APAC-Guardian-Consultant"},{"principalId":"31ea58d9-8dff-47e7-9bfd-6d31677047fe","roleDefinitionId":"91c1777a-f3dc-4fae-b103-61d183457e46","principalIdDisplayName":"Insight-MS-APAC-Guardian-ArchitectOwner"}'
+    $Authorization = @{
+        "Array1" = @{
+        "principalId" = "d58f3234-5da6-4c0e-a54d-91b943062ae9"
+        "roleDefinitionId" = "b24988ac-6180-42a0-ab88-20f7382dd24c"
+        "principalIdDisplayName" = "Insight-MS-APAC-Guardian-Consultant"
+        }
+        "Array2" = @{
+        "principalId" = "31ea58d9-8dff-47e7-9bfd-6d31677047fe"
+        "roleDefinitionId" = "91c1777a-f3dc-4fae-b103-61d183457e46"
+        "principalIdDisplayName" = "Insight-MS-APAC-Guardian-ArchitectOwner"
+        }
+        "Array3" = @{
+        "principalId" = "4c75a23a-a97d-4e81-a76e-54a4fdbd1105"
+        "roleDefinitionId" = "434105ed-43f6-45c7-a02f-909b2ba83430"
+        "principalIdDisplayName" = "Insight-MS-APAC-AU-Azure-PAL"
+        }
+        }
 }
 elseif($Country -eq 'NZ') {
-    $authorization = '{"principalId":"d58f3234-5da6-4c0e-a54d-91b943062ae9","roleDefinitionId":"b24988ac-6180-42a0-ab88-20f7382dd24c","principalIdDisplayName":"Insight-MS-APAC-Guardian-Consultant"},{"principalId":"31ea58d9-8dff-47e7-9bfd-6d31677047fe","roleDefinitionId":"91c1777a-f3dc-4fae-b103-61d183457e46","principalIdDisplayName":"Insight-MS-APAC-Guardian-ArchitectOwner"}'
+    $Authorization = @{
+        "Array1" = @{
+        "principalId" = "d58f3234-5da6-4c0e-a54d-91b943062ae9"
+        "roleDefinitionId" = "b24988ac-6180-42a0-ab88-20f7382dd24c"
+        "principalIdDisplayName" = "Insight-MS-APAC-Guardian-Consultant"
+        }
+        "Array2" = @{
+        "principalId" = "31ea58d9-8dff-47e7-9bfd-6d31677047fe"
+        "roleDefinitionId" = "91c1777a-f3dc-4fae-b103-61d183457e46"
+        "principalIdDisplayName" = "Insight-MS-APAC-Guardian-ArchitectOwner"
+        }
+        "Array3" = @{
+        "principalId" = "f554e4e3-7e86-4fd3-9c24-a7d207ba2cd1"
+        "roleDefinitionId" = "434105ed-43f6-45c7-a02f-909b2ba83430"
+        "principalIdDisplayName" = "Insight-MS-APAC-NZ-Azure-PAL"
+        }
+        }
     }else{}
 
 $enrollmentstatus = @()
