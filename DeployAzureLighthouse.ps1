@@ -10,6 +10,10 @@ $azGraph = Get-Module az.resourcegraph -ErrorAction silentlycontinue
 if ($azGraph -eq $null) {
     Install-Module Az.ResourceGraph -Force -Confirm:$false
 }
+$az = Get-Module -Name Az -ErrorAction SilentlyContinue
+if($az -eq $null){
+    Install-Module Az -Force -Confirm:$false -ErrorAction SilentlyContinue
+}
 
 #Validate Resource Group Name
 $ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
