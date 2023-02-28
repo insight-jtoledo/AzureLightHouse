@@ -1,3 +1,4 @@
+param(
 [parameter(mandatory)][string]$ManagementGroupName,
 [parameter(mandatory)][string]$Location,
 [parameter(mandatory)][string]$ResourceGroupName,
