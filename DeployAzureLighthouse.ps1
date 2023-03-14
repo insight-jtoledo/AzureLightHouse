@@ -43,9 +43,10 @@ $subscriptions = Search-AzGraph -Query "ResourceContainers | where type =~ 'micr
 $enrollmentstatus = @()
 ForEach ($subscription in $subscriptions) {
 try {
+    $Country = $Country.ToLower()
     Write-Host "Deploying Azure Lighthouse to"$subscription.Name -ForegroundColor Cyan
     Set-AzContext -Subscription $subscription.subscriptionId
-    New-AzSubscriptionDeployment -Location $Location -TemplateFile .\subscription.template.json -TemplateParameterFile ('.\subscription.' + $country + '.template.parameters.json')
+    New-AzSubscriptionDeployment -Location $Location -TemplateFile .\subscription.template.json -TemplateParameterFile ('.\subscription.' + $Country + '.template.parameters.json')
     $data = "" | Select-Object SubscriptionName, SubscriptionID, Status
     $data.SubscriptionName = $subscription.Name
     $data.SubscriptionID = $subscription.subscriptionId
