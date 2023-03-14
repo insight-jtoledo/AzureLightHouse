@@ -21,7 +21,7 @@ do {
     $ResourceGroupName = Read-Host "Enter name of Resource Group"
 }until(($ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName) -ne $null)
 }
-else { Write-Host "Validated Resource Group Name -ForegroundColor Cyan" }
+else { Write-Host "Validated Resource Group Name" -ForegroundColor Cyan }
 
 # Deploying Azure Lighthouse delegate
 Write-Host "Deploying Azure Lighthouse to $ResourceGroupName" -ForegroundColor Cyan
