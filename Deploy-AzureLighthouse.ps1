@@ -1,7 +1,8 @@
 param(
 [parameter(mandatory)][string]$ManagementGroupName,
-[parameter(mandatory)][string]$Location,
+[parameter(mandatory)][string]$SubscriptionID,
 [parameter(mandatory)][string]$ResourceGroupName,
+[parameter(mandatory)][string]$Location,
 [parameter(mandatory)][string]$Country
 )
 
@@ -12,6 +13,10 @@ Install-Module Az.ResourceGraph -Force -Confirm:$false
 if (-not (Get-Module -Name Az -ErrorAction SilentlyContinue)) {
 Install-Module Az -Force -Confirm:$false -ErrorAction SilentlyContinue
 }
+
+#Switch Context to where Guardian is deployed
+Write-Host "Switching to Azure Guardian Subscription" -ForegroundColor Cyan
+Set-AzContext -Subscription $SubscriptionID
 
 #Validate Resource Group Name
 $ResourceGroup = Get-AzResourceGroup -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
