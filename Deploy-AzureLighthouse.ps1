@@ -10,11 +10,7 @@ param(
 if (-not (Get-Module -Name Az.ResourceGraph -ErrorAction SilentlyContinue)) {
 Install-Module Az.ResourceGraph -Force -Confirm:$false
 }
-<#
-if (-not (Get-Module -Name Az -ErrorAction SilentlyContinue)) {
-Install-Module Az -Force -Confirm:$false -ErrorAction SilentlyContinue
-}
-#>
+
 #Switch Context to where Guardian is deployed
 Write-Host "Switching to Azure Guardian Subscription" -ForegroundColor Cyan
 Set-AzContext -Subscription $SubscriptionID
